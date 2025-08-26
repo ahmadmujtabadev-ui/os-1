@@ -1,33 +1,15 @@
-import jwt from 'jsonwebtoken';
+import { verifyAccess } from '../utils/jwt.js';
 
-const auth = (req, res, next) => {
+export default function auth(req, res, next) {
+  const header = req.get('authorization') || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ message: 'Missing token' });
   try {
-    if (!req.headers.authorization) {
-      res.status(401).json({ message: 'Please provide token' });
-    }
-
-    const token = req.headers.authorization.split(' ');
-    if (token.length >= 2) {
-      /* eslint-disable no-undef */
-      const decodedata = jwt.verify(token[1], process.env.JWTPHRASE);
-
-      if (decodedata?.id) {
-        req.userId = decodedata?.id;
-        req.email = decodedata?.email;
-        next();
-      } else {
-        res.status(401).json({ res: 'error', message: 'invalid token' });
-      }
-    } else {
-      res.status(401).json({ res: 'error', message: 'invalid token' });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      res: 'error',
-      message: 'error in auth middleware',
-    });
+    const payload = verifyAccess(token);
+    req.userId = payload.sub;
+    req.userRole = payload.role;
+  next();
+  } catch (e) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
-
-export default auth;
