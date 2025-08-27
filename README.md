@@ -73,8 +73,12 @@ Create a `.env` file in the root directory and add the following:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://your_user:your_password@cluster.mongodb.net/dbname
-JWT_SECRET=your_jwt_secret
+NODE_ENV=Production
+CONNECTION_URL=
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+JWT_ACCESS_TTL=
+JWT_REFRESH_TTL=
 ```
 
 ---
