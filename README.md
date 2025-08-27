@@ -1,6 +1,7 @@
-# 🚀 BoilerPlate-Express-MongoDB
+# Canvastry-WholeSale
 
-I have created this template to enable nodejs developers to start the project from scratch that is scalable, optimized and easy to maintain.
+**Canvastry-WholeSale** is a modern wholesale management platform built to streamline **bulk product ordering, inventory tracking, customer management, and sales analytics**.  
+It’s designed for distributors, wholesalers, and suppliers to manage operations efficiently with an intuitive dashboard and powerful automation.
 
 ## 📌 Features
 
