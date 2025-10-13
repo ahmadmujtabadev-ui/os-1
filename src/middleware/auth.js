@@ -1,15 +1,21 @@
-import { verifyAccess } from '../utils/jwt.js';
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
+import { unauthorized } from '../utils/http.js';
 
-export default function auth(req, res, next) {
-  const header = req.get('authorization') || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ message: 'Missing token' });
+export function signTokens(payload) {
+  const access = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
+  const refresh = jwt.sign(payload, env.REFRESH_SECRET, { expiresIn: env.REFRESH_EXPIRES_IN });
+  return { access, refresh };
+}
+
+export function authRequired(req, res, next) {
+  const auth = req.headers.authorization || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+  if (!token) return unauthorized(res, 'Missing token');
   try {
-    const payload = verifyAccess(token);
-    req.userId = payload.sub;
-    req.userRole = payload.role;
-  next();
-  } catch (e) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    req.user = jwt.verify(token, env.JWT_SECRET);
+    next();
+  } catch {
+    return unauthorized(res, 'Invalid token');
   }
-};
+}
