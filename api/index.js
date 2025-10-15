@@ -1,4 +1,4 @@
-import { connectDB } from "../src/config/db";
+import { connectDB } from "../src/config/db.js";
 
 export default async function handler(req, res) {
   // Handle favicon requests
