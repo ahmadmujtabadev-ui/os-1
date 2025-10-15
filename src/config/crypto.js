@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const KEY = Buffer.from("9f5c1a8d3e72b4c0d1e6f9a2b7c3845d6a1f0e9c2b3d4f5876a1c2d3e4f5b6a7");
+const KEY = Buffer.from("9f5c1a8d3e72b4c0");
 
 export function encryptSecret(plainText) {
   const iv = crypto.randomBytes(12);
