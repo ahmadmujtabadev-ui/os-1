@@ -1,16 +1,18 @@
-import app from '../src/app.js';
-import { connectDB } from '../src/config/db.js';
-
-let dbConnection;
-
 export default async function handler(req, res) {
-  // Handle favicon requests early
+  // Handle favicon requests
   if (req.url?.includes('favicon')) {
     return res.status(204).end();
   }
 
+  // Handle root path
+  if (req.url === '/' && req.method === 'GET') {
+    return res.status(200).json({ 
+      message: 'API is running',
+      status: 'ok' 
+    });
+  }
+
   try {
-    // Connect to DB once and reuse connection
     if (!dbConnection) {
       dbConnection = connectDB();
     }
@@ -18,11 +20,9 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Database connection failed:', error);
     return res.status(500).json({ 
-      error: 'Database connection failed',
-      message: error.message 
+      error: 'Database connection failed'
     });
   }
 
-  // Let Express handle the request
   return app(req, res);
 }
