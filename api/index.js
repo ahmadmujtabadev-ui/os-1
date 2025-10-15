@@ -1,3 +1,5 @@
+import { connectDB } from "../src/config/db";
+
 export default async function handler(req, res) {
   // Handle favicon requests
   if (req.url?.includes('favicon')) {
