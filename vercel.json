@@ -7,6 +7,6 @@
     { "src": "/(.*)", "dest": "/api/index.js" }
   ],
   "functions": {
-    "api/index.js":  { "maxDuration": 10, "memory": 1024 },
+    "api/index.js":  { "maxDuration": 10, "memory": 1024 }
   }
 }
