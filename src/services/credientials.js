@@ -26,15 +26,25 @@ export async function deleteCredentialService(req, id) {
 
 
 export async function createCredentialService(req, body) {
-  const ownerId = req.user.sub;
-  const { exchange, apiKey, apiSecret, email, username, label } = body;
+  const ownerId = req?.user?.sub;
+  if (!ownerId) throw new Error('Unauthorized');
 
+  const { exchange, apiKey, apiSecret, email, username, label } = body || {};
+
+  if (!exchange || !apiKey || !apiSecret) {
+    throw new Error('exchange, apiKey and apiSecret are required');
+  }
+
+  // derive display + storage fields
   const { last4, masked } = maskKeyLast4(apiKey);
-  const fp = fingerprint(apiKey);
-  const secretEnc = encryptSecret(apiSecret);
+  const fp = fingerprint(apiKey);            // sha256 hex
+  const secretEnc = encryptSecret(apiSecret); // AES-256-GCM
 
+  // create doc
   const doc = await Credential.create({
-    ownerId, exchange, label,
+    ownerId,
+    exchange,
+    label,
     apiKeyLast4: last4,
     apiKeyFingerprint: fp,
     secretEnc,
@@ -43,8 +53,17 @@ export async function createCredentialService(req, body) {
     status: 'active',
   });
 
-  await logAudit({ actorId: ownerId, entity: 'credential', entityId: doc._id, action: 'created', meta: { exchange, label }, req });
+  // audit (non-blocking if you prefer)
+  await logAudit({
+    actorId: ownerId,
+    entity: 'credential',
+    entityId: doc._id,
+    action: 'created',
+    meta: { exchange, label },
+    req,
+  });
 
+  // response payload
   return {
     id: doc.id,
     exchange: doc.exchange,
