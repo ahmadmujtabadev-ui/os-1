@@ -8,6 +8,5 @@
   ],
   "functions": {
     "api/index.js":  { "maxDuration": 10, "memory": 1024 },
-    "api/health.js": { "maxDuration": 5,  "memory": 128 }
   }
 }
