@@ -3,6 +3,28 @@ import { logAudit } from './audit.js';
 import { encryptSecret, fingerprint, maskKeyLast4 } from '../config/crypto.js';
 import { parsePageQuery } from '../utils/pagination.js';
 
+// ⬇️ NEW
+export async function deleteCredentialService(req, id) {
+  const ownerId = req.user.sub;
+
+  const c = await Credential.findOne({ _id: id, ownerId });
+  if (!c) throw new Error('Credential not found');
+
+  await Credential.deleteOne({ _id: c._id, ownerId });
+
+  await logAudit({
+    actorId: ownerId,
+    entity: 'credential',
+    entityId: c._id,
+    action: 'deleted',
+    meta: { exchange: c.exchange, label: c.label },
+    req,
+  });
+
+  return { id: c.id };
+}
+
+
 export async function createCredentialService(req, body) {
   const ownerId = req.user.sub;
   const { exchange, apiKey, apiSecret, email, username, label } = body;
@@ -52,8 +74,8 @@ export async function listCredentialService(req, query) {
     ];
   }
 
-  if (age === 'gt30') filter.lastUsedAt = { $lte: new Date(Date.now() - 30*24*3600*1000) };
-  if (age === 'gt90') filter.lastUsedAt = { $lte: new Date(Date.now() - 90*24*3600*1000) };
+  if (age === 'gt30') filter.lastUsedAt = { $lte: new Date(Date.now() - 30 * 24 * 3600 * 1000) };
+  if (age === 'gt90') filter.lastUsedAt = { $lte: new Date(Date.now() - 90 * 24 * 3600 * 1000) };
 
   const sort = {};
   if (sortBy === 'lastUsed') sort.lastUsedAt = sortDir === 'asc' ? 1 : -1;

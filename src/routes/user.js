@@ -20,6 +20,6 @@ router.get('/me', authRequired, me);
 router.post('/forgot-password', validate(schemas.forgotPassword), forgotPassword);
 router.post('/reset-password', validate(schemas.resetPassword), resetPassword);
 router.post('/change-password', authRequired, validate(schemas.changePassword), changePassword);
-router.post('/toggle-2fa', authRequired, toggle2FA); // optional, no OTP behind it
+router.post('/toggle-2fa', authRequired, toggle2FA); 
 
 export default router;

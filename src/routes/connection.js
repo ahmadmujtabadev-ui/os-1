@@ -9,9 +9,12 @@ import {
   resumeConnection,
   removeConnection,
   syncNow,
+   getStats, // <-- add this
 } from '../controllers/connection.js';
 
 const router = express.Router();
+
+router.get('/stats', authRequired, getStats);
 
 router.get('/', authRequired, validate(schemas.list), listConnections);
 router.post('/', authRequired, validate(schemas.create), createConnection);

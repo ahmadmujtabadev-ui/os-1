@@ -5,7 +5,13 @@ import {
   listCredentialService,
   rotateCredentialService,
   revokeCredentialService,
+  deleteCredentialService,
 } from '../services/credientials.js';
+
+export const deleteCredential = asyncHandler(async (req, res) => {
+  const data = await deleteCredentialService(req, req.params.id);
+  return ok(res, data, 'Credential deleted');
+});
 
 export const createCredential = asyncHandler(async (req, res) => {
   const data = await createCredentialService(req, req.body);
