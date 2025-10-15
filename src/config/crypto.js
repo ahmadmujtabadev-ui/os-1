@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
-const KEY = Buffer.from("9f5c1a8d3e72b4c0");
+// Use environment variable for the encryption key (32 bytes = 64 hex chars)
+const KEY = Buffer.from(process.env.MASTER_KEY_HEX || '', 'hex');
 
 export function encryptSecret(plainText) {
   const iv = crypto.randomBytes(12);
@@ -23,7 +24,6 @@ export function decryptSecret(blobB64) {
 
 export function fingerprint(input) {
   const hash = crypto.createHash('sha256').update(input).digest('hex');
-  // show a short fingerprint like "73:af:1b"
   return `${hash.slice(0,2)}:${hash.slice(2,4)}:${hash.slice(4,6)}`;
 }
 
