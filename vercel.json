@@ -2,7 +2,6 @@
   "version": 2,
   "routes": [
     { "handle": "filesystem" },                
-    { "src": "/", "dest": "/api/health.js" },  
     { "src": "/favicon\\.ico", "dest": "/favicon.ico" },
     { "src": "/favicon\\.png", "dest": "/favicon.png" },
     { "src": "/(.*)", "dest": "/api/index.js" }
