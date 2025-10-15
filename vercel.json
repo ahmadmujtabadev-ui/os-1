@@ -1,12 +1,30 @@
 {
-  "version": 2,
-  "routes": [
-    { "handle": "filesystem" },                
-    { "src": "/favicon\\.ico", "dest": "/favicon.ico" },
-    { "src": "/favicon\\.png", "dest": "/favicon.png" },
-    { "src": "/(.*)", "dest": "/api/index.js" }
-  ],
-  "functions": {
-    "api/index.js":  { "maxDuration": 10, "memory": 1024 }
-  }
+    "version": 2,
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "source": "/",
+            "destination": "/api/health"
+        },
+        {
+            "src": "/favicon\\.ico",
+            "dest": "/favicon.ico"
+        },
+        {
+            "src": "/favicon\\.png",
+            "dest": "/favicon.png"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.js"
+        }
+    ],
+    "functions": {
+        "api/index.js": {
+            "maxDuration": 10,
+            "memory": 1024
+        }
+    }
 }
