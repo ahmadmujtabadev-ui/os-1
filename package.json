@@ -1,6 +1,8 @@
 {
   "name": "exchangehub-api",
   "type": "module",
+    "engines": { "node": "18.x" },
+
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
