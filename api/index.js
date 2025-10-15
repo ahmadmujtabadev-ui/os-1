@@ -1,29 +1,28 @@
 import app from '../src/app.js';
 import { connectDB } from '../src/config/db.js';
 
-let ready;
+let dbConnection;
 
 export default async function handler(req, res) {
-  // Handle favicon requests
-  if (req.url === '/favicon.ico' || req.url === '/favicon.png') {
+  // Handle favicon requests early
+  if (req.url?.includes('favicon')) {
     return res.status(204).end();
   }
-  
-  // Handle root health check
-  if (req.url === '/') {
-    // Let Express handle it or return simple response
-    // If you want Express to handle it, skip this block
-  }
-  
+
   try {
-    // Initialize DB connection once and cache it
-    ready = ready || connectDB();
-    await ready;
-  } catch (e) {
-    console.error('DB connect failed', e);
-    return res.status(500).json({ error: 'DB connection failed' });
+    // Connect to DB once and reuse connection
+    if (!dbConnection) {
+      dbConnection = connectDB();
+    }
+    await dbConnection;
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    return res.status(500).json({ 
+      error: 'Database connection failed',
+      message: error.message 
+    });
   }
-  
-  // Forward all requests to Express
+
+  // Let Express handle the request
   return app(req, res);
 }
