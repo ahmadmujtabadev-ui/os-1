@@ -1,34 +1,27 @@
-import crypto from 'crypto';
-import { env } from './env.js';
+import { createCipheriv, randomBytes, createDecipheriv } from 'crypto';
 
-const KEY = Buffer.from(env.MASTER_KEY_HEX, 'hex');
+const keyHex = process.env.MASTER_KEY_HEX || '';
+if (!/^[0-9a-f]{64}$/i.test(keyHex)) {
+  throw new Error('MASTER_KEY_HEX must be 64 hex chars (32 bytes) for AES-256-GCM');
+}
+export const MASTER_KEY = Buffer.from(keyHex, 'hex');
 
-export function encryptSecret(plainText) {
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv('aes-256-gcm', KEY, iv);
-  const enc = Buffer.concat([cipher.update(plainText, 'utf8'), cipher.final()]);
+// example helpers
+export function encryptSecret(plaintext) {
+  const iv = randomBytes(12); // GCM: 96-bit IV
+  const cipher = createCipheriv('aes-256-gcm', MASTER_KEY, iv);
+  const enc = Buffer.concat([cipher.update(String(plaintext), 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return Buffer.concat([iv, tag, enc]).toString('base64'); 
+  return Buffer.concat([iv, tag, enc]).toString('base64');
 }
 
-export function decryptSecret(blobB64) {
-  const blob = Buffer.from(blobB64, 'base64');
-  const iv = blob.subarray(0, 12);
-  const tag = blob.subarray(12, 28);
-  const enc = blob.subarray(28);
-  const decipher = crypto.createDecipheriv('aes-256-gcm', KEY, iv);
+export function decryptSecret(payloadB64) {
+  const buf = Buffer.from(payloadB64, 'base64');
+  const iv = buf.subarray(0, 12);
+  const tag = buf.subarray(12, 28);
+  const data = buf.subarray(28);
+  const decipher = createDecipheriv('aes-256-gcm', MASTER_KEY, iv);
   decipher.setAuthTag(tag);
-  const dec = Buffer.concat([decipher.update(enc), decipher.final()]).toString('utf8');
-  return dec;
-}
-
-export function fingerprint(input) {
-  const hash = crypto.createHash('sha256').update(input).digest('hex');
-  // show a short fingerprint like "73:af:1b"
-  return `${hash.slice(0,2)}:${hash.slice(2,4)}:${hash.slice(4,6)}`;
-}
-
-export function maskKeyLast4(key) {
-  const last4 = key.slice(-4);
-  return { last4, masked: `••••-••••-••••-${last4}` };
+  const dec = Buffer.concat([decipher.update(data), decipher.final()]);
+  return dec.toString('utf8');
 }
