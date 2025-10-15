@@ -37,12 +37,4 @@ export const env = {
 
 const isHex64 = (v) => typeof v === 'string' && /^[0-9a-fA-F]{64}$/.test(v);
 
-// In dev, auto-generate a temporary key; in prod, require it.
-if (!isHex64(env.MASTER_KEY_HEX)) {
-  if (env.NODE_ENV !== 'production') {
-    env.MASTER_KEY_HEX = crypto.randomBytes(32).toString('hex');
-    console.warn('[dev] MASTER_KEY_HEX was missing; generated a temporary key.');
-  } else {
-    throw new Error('MASTER_KEY_HEX (32-byte hex) is required for AES-256-GCM');
-  }
-}
+
