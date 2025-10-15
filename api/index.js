@@ -1,6 +1,15 @@
 import app from '../src/app.js';
 import { connectDB } from '../src/config/db.js'; // adjust path to your connect function
 
+export default async function handler(req, res) {
+  if (req.url === '/' || req.url === '/favicon.ico' || req.url === '/favicon.png') {
+    return req.url === '/' ? res.status(200).send('ok') : res.status(204).end();
+  }
+
+  // ...rest of your API...
+}
+
+
 let ready;
 export default async function handler(req, res) {
   try {
